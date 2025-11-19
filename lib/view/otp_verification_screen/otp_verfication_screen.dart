@@ -45,22 +45,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   Widget otpBox(int index) {
-    return Container(
-      width: 55,
-      height: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
+    return SizedBox(
+      width: 48,
       child: TextField(
         controller: controllers[index],
         textAlign: TextAlign.center,
         maxLength: 1,
         keyboardType: TextInputType.number,
         style: const TextStyle(fontSize: 22),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
+        decoration: InputDecoration(
           counterText: "",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         onChanged: (value) {
           if (value.isNotEmpty && index < 5) {
@@ -90,7 +87,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
               const SizedBox(height: 6),
 
-              Row(
+              Wrap(
                 children: [
                   const Text(
                     "Enter the verification code sent to ",
@@ -109,49 +106,51 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
               const SizedBox(height: 35),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              /// ⭐ 6 OTP boxes – NO OVERFLOW
+              Wrap(
+                spacing: 4,
+                runSpacing: 12,
                 children: List.generate(6, (i) => otpBox(i)),
               ),
 
               const SizedBox(height: 35),
 
-              /// ⭐ Gradient button
               GradientButton(
-                  text: "Continue",
-                  onPressed: () async {
-                    String otp = controllers.map((c) => c.text).join();
+                text: "Continue",
+                onPressed: () async {
+                  String otp = controllers.map((c) => c.text).join();
 
-                    if (otp.length != 6) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Enter 6-digit OTP")),
-                      );
-                      return;
-                    }
+                  if (otp.length != 6) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Enter 6-digit OTP")),
+                    );
+                    return;
+                  }
 
-                    final provider =
-                        Provider.of<OtpController>(context, listen: false);
+                  final provider =
+                      Provider.of<OtpController>(context, listen: false);
 
-                    final result = await provider.verifyOtp(widget.email, otp);
+                  final result = await provider.verifyOtp(widget.email, otp);
 
-                    if (result != null) {
-                      String token = result['token'];
+                  if (result != null) {
+                    String token = result['token'];
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => NameScreen(
-                            token: token,
-                            email: widget.email,
-                          ),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => NameScreen(
+                          token: token,
+                          email: widget.email,
                         ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Invalid OTP!")),
-                      );
-                    }
-                  }),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Invalid OTP!")),
+                    );
+                  }
+                },
+              ),
 
               const SizedBox(height: 22),
 

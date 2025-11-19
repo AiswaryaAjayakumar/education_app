@@ -1,5 +1,4 @@
 import 'package:education_app/controller/otp_controller/otp_controller.dart';
-import 'package:education_app/view/google_auth_service/google_auth_service.dart';
 import 'package:education_app/view/google_siging/google_signing.dart';
 import 'package:education_app/view/otp_verification_screen/otp_verfication_screen.dart';
 import 'package:education_app/view/register_screen/register_screen.dart';
@@ -24,47 +23,32 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
+      
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-
-              // Back button row
               const Row(
                 children: [
                   Icon(Icons.arrow_back, size: 22),
                   SizedBox(width: 5),
-                  Text(
-                    "Back",
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
+                  Text("Back", style: TextStyle(fontSize: 18)),
                 ],
               ),
-
               const SizedBox(height: 35),
-
               const Text(
                 "Email",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-
               const SizedBox(height: 10),
-
               EmailTextField(
                 controller: emailController,
                 hint: "penoftdesign@gmail.com",
                 icon: Icons.email_outlined,
               ),
-
               const SizedBox(height: 18),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -81,46 +65,39 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const Text(
                     "Forgot Password?",
-                    style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.deepPurple),
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
+              GradientButton(
+                text: "Continue",
+                onPressed: () async {
+                  final email = emailController.text.trim();
 
-             GradientButton(
-  text: "Continue",
-  onPressed: () async {
-    final email = emailController.text.trim();
+                  if (email.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please enter email")),
+                    );
+                    return;
+                  }
 
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter email")),
-      );
-      return;
-    }
+                  final otpProvider =
+                      Provider.of<OtpController>(context, listen: false);
 
-    final otpProvider = Provider.of<OtpController>(context, listen: false);
+                  bool success = await otpProvider.sendOtp(email);
 
-    bool success = await otpProvider.sendOtp(email);
-
-    if (success) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => OtpVerificationScreen(email: email),
-        ),
-      );
-    } 
-  },
-),
-
-
+                  if (success) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => OtpVerificationScreen(email: email),
+                      ),
+                    );
+                  }
+                },
+              ),
               const SizedBox(height: 25),
-
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -145,26 +122,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 25),
-
               Row(
                 children: [
-                  Expanded(
-                    child: Container(height: 1, color: Colors.grey.shade300),
-                  ),
+                  Expanded(child: Container(height: 1, color: Colors.grey)),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     child: Text("OR"),
                   ),
-                  Expanded(
-                    child: Container(height: 1, color: Colors.grey.shade300),
-                  ),
+                  Expanded(child: Container(height: 1, color: Colors.grey)),
                 ],
               ),
-
               const SizedBox(height: 25),
-
               GestureDetector(
                 onTap: () => handleGoogleLogin(context),
                 child: Container(
@@ -184,15 +153,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(width: 12),
                       const Text(
                         "Continue with Google",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(fontSize: 16),
                       ),
                     ],
                   ),
                 ),
               ),
+              const SizedBox(height: 30),
             ],
           ),
         ),

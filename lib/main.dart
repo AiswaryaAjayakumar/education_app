@@ -33,7 +33,6 @@ class EducationApp extends StatelessWidget {
         title: "Login UI",
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
-          
         ),
         home: LoginScreen(),
       ),
